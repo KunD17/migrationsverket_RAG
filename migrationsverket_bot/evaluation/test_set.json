@@ -1,0 +1,158 @@
+[
+  {
+    "question": "Hur ansöker jag om uppehållstillstånd för arbete i Sverige?",
+    "answer": "För arbete i Sverige måste du skicka in en ansökan om uppehållstillstånd för arbete via Migrationsverkets e-tjänst och bifoga ett erbjudande om arbete samt bevis på att lönen och arbetsvillkoren uppfyller svenska krav.",
+    "language": "sv",
+    "category": "work_permits"
+  },
+  {
+    "question": "What documents are needed for family reunification in Sweden?",
+    "answer": "You need identity documents, proof of the family relationship, and evidence that the sponsor can support the family member in Sweden. Requirements depend on whether the relative is a spouse, child, or parent.",
+    "language": "en",
+    "category": "family_reunification"
+  },
+  {
+    "question": "Kan jag ansöka om asyl direkt på gränsen till Sverige?",
+    "answer": "Ja, du kan ansöka om asyl vid gränsen eller vid en asylmottagningsenhet. Migrationsverket kommer att registrera din ansökan och genomföra en förundersökning.",
+    "language": "sv",
+    "category": "asylum"
+  },
+  {
+    "question": "How long does it take to process a residence permit extension?",
+    "answer": "Processing times vary, but a residence permit extension can take several months. You should apply before your current permit expires to avoid a gap in your legal status.",
+    "language": "en",
+    "category": "residence_permits"
+  },
+  {
+    "question": "Vad krävs för att få uppehållstillstånd som studerande?",
+    "answer": "Du måste ha antagning till en godkänd utbildning, tillräckliga pengar för försörjning och bostad, samt giltig sjukförsäkring.",
+    "language": "sv",
+    "category": "study_permits"
+  },
+  {
+    "question": "How do I prove sufficient funds for a student residence permit?",
+    "answer": "You must provide bank statements or scholarship letters showing that you have enough money to cover living expenses and tuition fees for the required period.",
+    "language": "en",
+    "category": "study_permits"
+  },
+  {
+    "question": "Hur fungerar arbetstillstånd för arbetstagare med EU-blåkort?",
+    "answer": "EU-blåkort beviljas när du har en högkvalificerad tjänst med avtalad lön som är minst 1,5 gånger den genomsnittliga svenska lönen. Du måste också ha relevant utbildning eller arbetslivserfarenhet.",
+    "language": "sv",
+    "category": "work_permits"
+  },
+  {
+    "question": "Can I work while waiting for a residence permit decision?",
+    "answer": "If you are already in Sweden and have legal stay, you may be allowed to continue working while your extension is processed. The exact rules depend on your permit type.",
+    "language": "en",
+    "category": "work_permits"
+  },
+  {
+    "question": "Vilka krav finns för investeringsrelaterat uppehållstillstånd?",
+ "answer": "Investeringsrelaterat uppehållstillstånd ställs höga krav på kapital, affärsplan och lokal etablering. Endast i undantagsfall beviljas tillstånd på den grunden.",
+    "language": "sv",
+    "category": "business_permits"
+  },
+  {
+    "question": "What is needed to extend a spouse residence permit?",
+    "answer": "The spouse must show that the marriage is genuine, that the couple can support themselves in Sweden, and that housing conditions are satisfactory.",
+    "language": "en",
+    "category": "family_reunification"
+  },
+  {
+    "question": "Hur ansöker man om svenskt medborgarskap?",
+    "answer": "Du ansöker om medborgarskap genom Migrationsverkets e-tjänst eller via post. Du måste uppfylla krav på bosättningstid, språk och vandel.",
+    "language": "sv",
+    "category": "citizenship"
+  },
+  {
+    "question": "How is police certificate handled for a residence permit?",
+    "answer": "A police certificate may be required if you have lived in another country. Submit an official criminal background certificate translated into Swedish or English.",
+    "language": "en",
+    "category": "residence_permits"
+  },
+  {
+    "question": "Vad gör jag om min uppehållstillståndsansökan avslås?",
+    "answer": "Du kan överklaga beslutet till migrationsdomstolen inom tre veckor från beslutets datum. Det är viktigt att ange nya uppgifter eller rätta eventuella fel.",
+    "language": "sv",
+    "category": "appeals"
+  },
+  {
+    "question": "What happens after an asylum decision in Sweden?",
+    "answer": "If asylum is granted, the applicant receives a residence permit. If rejected, an appeal can be submitted, or the person may receive a return decision.",
+    "language": "en",
+    "category": "asylum"
+  },
+  {
+    "question": "Hur mycket får man tjäna på studiebidrag under studietiden?",
+    "answer": "Studiebidrag beror på din utbildning och studiemängd. För utländska studenter är det oftast inte tillgängligt, men du kan ha rätt till stöd i vissa fall.",
+    "language": "sv",
+    "category": "student_support"
+  },
+  {
+    "question": "What are the rules for bringing children on a family permit?",
+    "answer": "Children under 18 may be included in a family reunification application if the sponsor can support them and they live with the sponsor in Sweden.",
+    "language": "en",
+    "category": "family_reunification"
+  },
+  {
+    "question": "Kan jag ha två tillstånd samtidigt i Sverige?",
+    "answer": "Normalt kan du bara ha ett giltigt uppehållstillstånd samtidigt. Om ditt nuvarande tillstånd ändras måste du ansöka om det nya innan det gamla löper ut.",
+    "language": "sv",
+    "category": "residence_permits"
+  },
+  {
+    "question": "How do I register my address after moving to Sweden?",
+    "answer": "You must register your address with the Swedish Tax Agency (Skatteverket) once you have a permanent residence in Sweden.",
+    "language": "en",
+    "category": "post_arrival"
+  },
+  {
+    "question": "Vilka är kraven för att få uppehållstillstånd för forskning?",
+    "answer": "För forskare krävs ett erbjudande om anställning eller stipendium från en svensk forskningsinstitution och bevis på att du kan finansiera din vistelse.",
+    "language": "sv",
+    "category": "work_permits"
+  },
+  {
+    "question": "What is the minimum salary requirement for a work permit?",
+    "answer": "A work permit requires that the salary meets Swedish collective agreement or customary wage levels, depending on the profession and sector.",
+    "language": "en",
+    "category": "work_permits"
+  },
+  {
+    "question": "Hur påverkar EU-medborgarskap rätt till arbete i Sverige?",
+    "answer": "EU-medborgare har rätt att arbeta och bo i Sverige utan uppehållstillstånd, men måste registrera sig hos Migrationsverket om de stannar längre än tre månader.",
+    "language": "sv",
+    "category": "eu_rights"
+  },
+  {
+    "question": "How do I apply for a residence card as an EU family member?",
+    "answer": "You submit an application to the Swedish Migration Agency and provide proof of your family relationship to the EU citizen living in Sweden.",
+    "language": "en",
+    "category": "eu_rights"
+  },
+  {
+    "question": "Vilka skäl krävs för att få ett tillfälligt skyddsuppehållstillstånd?",
+    "answer": "Tillfälligt skyddsuppehållstillstånd kan ges till personer som flyr krig eller grov konflikt och inte har möjlighet att återvända till sitt hemland.",
+    "language": "sv",
+    "category": "asylum"
+  },
+  {
+    "question": "What is the difference between temporary and permanent residence permits?",
+    "answer": "A temporary residence permit is valid for a limited time and may need renewal, while permanent residence allows longer-term stay once conditions are met.",
+    "language": "en",
+    "category": "residence_permits"
+  },
+  {
+    "question": "Hur får jag information om min ansökningsstatus?",
+    "answer": "Du kan följa din ansökan via Migrationsverkets e-tjänst och få uppdateringar om beslut och eventuella kompletteringskrav.",
+    "language": "sv",
+    "category": "case_status"
+  },
+  {
+    "question": "How can I contact the Swedish Migration Agency?",
+    "answer": "You can contact the Swedish Migration Agency via their website, phone, or by booking an appointment at a local office.",
+    "language": "en",
+    "category": "support"
+  }
+]
