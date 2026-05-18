@@ -63,7 +63,6 @@ def crawl_site(start_url: str = BASE_URL, max_pages: int = 100) -> list[dict[str
             page = scrape_page(url)
             new_links = discover_links(page["html"], url)
             queue.extend(link for link in new_links if link not in visited)
-            page.pop("html")
             pages.append(page)
         except Exception:
             continue

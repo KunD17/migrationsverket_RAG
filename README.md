@@ -62,7 +62,7 @@ store = VectorStore()
 embedder = Embedder()
 
 for page in pages:
-    chunks = chunk_html_by_heading(page.get("body", ""))
+    chunks = chunk_html_by_heading(page.get("html", ""))
     for chunk in chunks:
         doc_id = str(uuid.uuid4())
         embedding = embedder.embed_query(chunk["text"])
