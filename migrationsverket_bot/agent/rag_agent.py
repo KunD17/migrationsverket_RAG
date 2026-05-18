@@ -34,7 +34,7 @@ def _generate_answer(query: str, chunks: list[dict]) -> str:
     """Generate a grounded Swedish answer from retrieved chunks."""
     context_parts = []
     for c in chunks:
-        meta = c.get("metadata", {})
+        meta = c.get("metadata") or {}
         url = meta.get("url", "okänd källa")
         section = meta.get("heading", "")
         text = c.get("document", "")
@@ -92,7 +92,8 @@ class RAGAgent:
 
         for attempt in range(RETRY_LIMIT + 1):
             embedding = self.embedder.embed_query(current_query)
-            chunks = self.vector_store.query(embedding)
+            raw_chunks = self.vector_store.query(embedding)
+            chunks = [c for c in raw_chunks if len(c.get("document") or "") > 100]
             relevance_score = assess_relevance(current_query, chunks)
 
             if relevance_score >= CONFIDENCE_THRESHOLD:
@@ -111,8 +112,8 @@ class RAGAgent:
             answer, answer_translated = translate_response(answer_sv, target_language)
             sources = [
                 {
-                    "url": c.get("metadata", {}).get("url", ""),
-                    "section": c.get("metadata", {}).get("heading", ""),
+                    "url": (c.get("metadata") or {}).get("url", ""),
+                    "section": (c.get("metadata") or {}).get("heading", ""),
                 }
                 for c in chunks
             ]

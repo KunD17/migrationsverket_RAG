@@ -28,7 +28,7 @@ def scrape_page(url: str) -> dict[str, str]:
     article = soup.find("article") or soup.find("main") or soup
     body = article.get_text(separator="\n", strip=True)
 
-    return {"url": url, "title": title, "body": body, "html": html}
+    return {"url": url, "title": title, "body": body, "html": html, "content_html": str(article)}
 
 
 def _is_migrationsverket_url(url: str) -> bool:

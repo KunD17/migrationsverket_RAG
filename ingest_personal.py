@@ -12,6 +12,7 @@ import re
 import uuid
 
 import requests
+from bs4 import BeautifulSoup
 
 from migrationsverket_bot.config import USER_AGENT
 from migrationsverket_bot.ingestion.chunker import chunk_html_by_heading
@@ -94,7 +95,9 @@ for i, url in enumerate(new_urls, 1):
         mark_ingested([url], log)
         continue
 
-    chunks = chunk_html_by_heading(html)
+    soup = BeautifulSoup(html, "html.parser")
+    article = soup.find("article") or soup.find("main") or soup
+    chunks = chunk_html_by_heading(str(article))
     if not chunks:
         print(f"  [{i}/{len(new_urls)}] No chunks — skipping {url}")
         mark_ingested([url], log)
