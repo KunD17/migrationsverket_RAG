@@ -43,9 +43,11 @@ def _generate_answer(query: str, chunks: list[dict]) -> str:
 
     prompt = (
         "You are a helpful assistant answering questions about Swedish immigration "
-        "based strictly on the provided context. "
+        "based strictly on the provided context below. "
         "Answer in the same language as the question. "
         "Be specific and practical — list steps, documents, and requirements where relevant. "
+        "IMPORTANT: never state that something is NOT required or NOT necessary unless "
+        "the context explicitly says so. If you are unsure, omit the statement entirely. "
         "Only say you don't know if the context genuinely contains no relevant information.\n\n"
         f"Context:\n{context}\n\n"
         f"Question: {query}\n\n"
