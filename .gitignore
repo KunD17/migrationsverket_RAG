@@ -1,5 +1,5 @@
 /migrag
-migrationsverket_bot/data
+migrationsverket_bot/data/
 migrationsverket_bot/data/chroma
 migrationsverket_bot/migrationsverket_rag.sqlite
 *.sqlite
