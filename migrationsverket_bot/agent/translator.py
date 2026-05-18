@@ -31,14 +31,14 @@ def translate_text(text: str, source_lang: str, target_lang: str) -> str:
 
 
 def translate_query(query: str, detected_lang: str) -> tuple[str, bool]:
-    """Translate an English query to Swedish if required before retrieval."""
-    if detected_lang == "en":
-        return translate_text(query, source_lang="en", target_lang="sv"), True
+    """Translate a non-Swedish query to Swedish before retrieval."""
+    if detected_lang != "sv":
+        return translate_text(query, source_lang=detected_lang, target_lang="sv"), True
     return query, False
 
 
 def translate_response(answer: str, target_lang: str) -> tuple[str, bool]:
-    """Translate the final Swedish answer to English if requested."""
-    if target_lang == "en":
-        return translate_text(answer, source_lang="sv", target_lang="en"), True
+    """Translate the Swedish answer into the user's language if it isn't Swedish."""
+    if target_lang != "sv":
+        return translate_text(answer, source_lang="sv", target_lang=target_lang), True
     return answer, False

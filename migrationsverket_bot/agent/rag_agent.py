@@ -42,12 +42,14 @@ def _generate_answer(query: str, chunks: list[dict]) -> str:
     context = "\n\n".join(context_parts)
 
     prompt = (
-        "Du är en hjälpsam assistent som svarar på frågor om svensk immigration "
-        "enbart baserat på den angivna kontexten. Svara på svenska. "
-        "Om kontexten inte räcker för att svara, säg det tydligt utan att gissa.\n\n"
-        f"Kontext:\n{context}\n\n"
-        f"Fråga: {query}\n\n"
-        "Svar (strikt baserat på kontexten ovan):"
+        "You are a helpful assistant answering questions about Swedish immigration "
+        "based strictly on the provided context. "
+        "Answer in the same language as the question. "
+        "Be specific and practical — list steps, documents, and requirements where relevant. "
+        "Only say you don't know if the context genuinely contains no relevant information.\n\n"
+        f"Context:\n{context}\n\n"
+        f"Question: {query}\n\n"
+        "Answer:"
     )
 
     response = requests.post(
@@ -79,9 +81,9 @@ class RAGAgent:
         detected_language = detect_language(query)
         target_language = explicit_language or detected_language
 
-        swedish_query, query_translated = translate_query(query, detected_language)
+        _, query_translated = translate_query(query, detected_language)
 
-        current_query = swedish_query
+        current_query = query
         reformulated_query: str | None = None
         chunks: list[dict] = []
         relevance_score = 0.0

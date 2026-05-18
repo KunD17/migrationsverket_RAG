@@ -43,7 +43,7 @@ def discover_links(html: str, base_url: str) -> list[str]:
     links: set[str] = set()
     for anchor in soup.find_all("a", href=True):
         full_url = urljoin(base_url, anchor["href"]).split("#")[0]
-        if _is_migrationsverket_url(full_url) and "/en/" not in urlparse(full_url).path:
+        if _is_migrationsverket_url(full_url):
             links.add(full_url)
     return list(links)
 
