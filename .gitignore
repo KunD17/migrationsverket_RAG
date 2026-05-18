@@ -9,3 +9,4 @@ migrationsverket_bot/migrationsverket_rag.sqlite
 *.json
 *.env
 __pycache__/
+*.sqlite3
