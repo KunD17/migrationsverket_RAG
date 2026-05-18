@@ -1,1 +1,1 @@
-"""Observability package for Migrationsverket RAG.""
+"""Observability package for Migrationsverket RAG."""
