@@ -8,5 +8,8 @@ DetectorFactory.seed = 0
 
 
 def detect_language(text: str) -> str:
-    """Return the detected ISO language code for a query."""
-    return detect(text)
+    """Return the detected ISO language code for a query, defaulting to Swedish."""
+    try:
+        return detect(text)
+    except Exception:
+        return "sv"

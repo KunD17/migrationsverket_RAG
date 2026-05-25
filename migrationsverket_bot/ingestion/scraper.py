@@ -28,7 +28,7 @@ def scrape_page(url: str) -> dict[str, str]:
     article = soup.find("article") or soup.find("main") or soup
     body = article.get_text(separator="\n", strip=True)
 
-    return {"url": url, "title": title, "body": body, "html": html}
+    return {"url": url, "title": title, "body": body, "html": html, "content_html": str(article)}
 
 
 def _is_migrationsverket_url(url: str) -> bool:
@@ -43,7 +43,7 @@ def discover_links(html: str, base_url: str) -> list[str]:
     links: set[str] = set()
     for anchor in soup.find_all("a", href=True):
         full_url = urljoin(base_url, anchor["href"]).split("#")[0]
-        if _is_migrationsverket_url(full_url) and "/en/" not in urlparse(full_url).path:
+        if _is_migrationsverket_url(full_url):
             links.add(full_url)
     return list(links)
 

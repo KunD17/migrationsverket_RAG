@@ -1,6 +1,10 @@
-# Migrationsverket RAG Chatbot
+# Migrationsverket RAG
 
-A local retrieval-augmented generation system for Swedish immigration questions, built with Ollama, ChromaDB, BeautifulSoup, and Streamlit. All inference and translation runs locally — no external APIs.
+A local RAG chatbot for Swedish immigration questions. Runs entirely on your machine — no API keys, no cloud.
+
+Built for a specific use case: a researcher living and working in Sweden who needs quick answers about permits, renewals, citizenship, and inviting family/friends to visit.
+
+**Stack:** Ollama (llama3.1 + nomic-embed-text), ChromaDB, BeautifulSoup, Streamlit.
 
 ## Architecture
 
@@ -9,124 +13,101 @@ flowchart LR
     User[(User)] -->|Query| UI[Streamlit UI]
     UI -->|Query + language override| Agent[RAG Agent]
     Agent -->|Detect language| Detector[Language Detector]
-    Agent -->|Translate EN→SV if needed| Translator[Translator]
     Agent -->|Embed query| Embedder[Embedder\nnomic-embed-text]
     Agent -->|Retrieve top-k| VectorStore[ChromaDB\nVector Store]
-    Agent -->|Assess chunks| Relevance[Relevance Checker]
-    Agent -->|Reformulate if low relevance| Reformulator[Query Reformulator]
+    Agent -->|Score cosine similarity| Relevance[Relevance Checker]
+    Agent -->|Reformulate if low score| Reformulator[Query Reformulator]
     Agent -->|Generate grounded answer| LLM[Ollama\nllama3.1]
-    Agent -->|Translate SV→EN if needed| Translator
+    Agent -->|Translate answer if needed| Translator[Translator]
     Agent -->|Log interaction| Logger[SQLite\nquery_log]
     Agent -->|Answer + citations| UI
 ```
 
-## Project overview
-
-This project ingests Swedish Migrationsverket content, stores it in a local ChromaDB vector store, and serves a multilingual RAG chatbot. The pipeline auto-detects query language, translates English queries to Swedish before retrieval, generates answers grounded in Swedish source chunks, then translates the answer back to English if needed. A retry loop with LLM-based relevance checking and query reformulation ensures quality before falling back gracefully.
-
 ## Setup
 
-### 1. Prerequisites
-
-- Python 3.11+
-- [Ollama](https://ollama.com) installed and running locally
-
-### 2. Pull the required Ollama models
+**Prerequisites:** Python 3.11+, [Ollama](https://ollama.com) running locally.
 
 ```bash
 ollama pull llama3.1
 ollama pull nomic-embed-text
+
+python3.11 -m venv myvenv
+source myvenv/bin/activate
+pip install -e .
 ```
 
-### 3. Create a virtual environment and install dependencies
+## Ingestion
+
+The site has ~4000 pages. `ingest_personal.py` pulls the URL list from the sitemap, filters to ~1100 relevant pages (work permits, researchers, studying, visiting, permanent residency, citizenship), and indexes those. Already-ingested URLs are tracked so re-runs only pick up new pages.
 
 ```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+python ingest_personal.py
 ```
 
-### 4. Ingest Migrationsverket content
-
-Run the scraper to crawl and index the website before starting the chatbot:
-
-```python
-from migrationsverket_bot.ingestion.scraper import crawl_site
-from migrationsverket_bot.ingestion.chunker import chunk_html_by_heading
-from migrationsverket_bot.retrieval.embedder import Embedder
-from migrationsverket_bot.retrieval.vector_store import VectorStore
-import uuid
-
-pages = crawl_site(max_pages=200)
-store = VectorStore()
-embedder = Embedder()
-
-for page in pages:
-    chunks = chunk_html_by_heading(page.get("html", ""))
-    for chunk in chunks:
-        doc_id = str(uuid.uuid4())
-        embedding = embedder.embed_query(chunk["text"])
-        store.add_documents(
-            ids=[doc_id],
-            embeddings=[embedding],
-            documents=[chunk["text"]],
-            metadatas=[{"url": page["url"], "heading": chunk["heading"]}],
-        )
+To start fresh:
+```bash
+rm -rf migrationsverket_bot/data/chroma
+rm -f migrationsverket_bot/data/ingested_urls.json
+python ingest_personal.py
 ```
 
-### 5. Start the Streamlit app
+## Running
 
 ```bash
-streamlit run migrationsverket_bot/ui/app.py
+python -m streamlit run migrationsverket_bot/ui/app.py
 ```
 
-## Example queries
+Opens at `http://localhost:8501`. Chat tab for questions, metrics tab for query history, confidence scores, and latency.
 
-- Swedish: `Vilka krav gäller för uppehållstillstånd för arbete?`
-- Swedish: `Hur ansöker jag om asyl i Sverige?`
-- English: `What documents are needed for family reunification?`
-- English: `How do I renew my residence permit from abroad?`
+## Testing
 
-## Cross-lingual RAG architecture
+```bash
+python run_tests.py
+```
 
-The system uses a **translate → retrieve → generate → translate** pipeline:
+Runs 16 questions covering the main use cases and checks answers against expected keywords.
 
-1. Detect the incoming query language with `langdetect`.
-2. If English, translate the query to Swedish via local Ollama before retrieval.
-3. Embed the Swedish query with `nomic-embed-text` and retrieve top-k chunks from ChromaDB.
-4. Score retrieved chunks for relevance using the LLM (0–1 scale).
-5. If relevance is below threshold, reformulate the query with the LLM and retry (max 2 times).
-6. If still low relevance after retries, return a grounded fallback in the user's language.
-7. Generate a Swedish answer strictly grounded in the retrieved chunks.
-8. If the user requested English output, translate the final answer via Ollama.
-9. Cite source URL and section heading with every answer.
-10. Log the full interaction (query, language, reformulation, chunks, confidence, latency) to SQLite.
+## Tuning
 
-## Repository structure
+Everything is in [config.py](migrationsverket_bot/config.py):
+
+| Setting | Default | Effect |
+|---|---|---|
+| `OLLAMA_MODEL` | `llama3.1` | Swap for `mistral` etc. |
+| `EMBEDDING_MODEL` | `nomic-embed-text` | Embedding model |
+| `TOP_K` | `5` | Chunks retrieved per query |
+| `CONFIDENCE_THRESHOLD` | `0.4` | Cosine similarity cutoff — below this the fallback triggers |
+| `RETRY_LIMIT` | `2` | Reformulation attempts before giving up |
+
+## Structure
 
 ```
 migrationsverket_bot/
 ├── ingestion/
-│   ├── scraper.py          # crawls and scrapes Migrationsverket pages
-│   └── chunker.py          # section/heading-based chunking
+│   ├── scraper.py          # fetches and parses pages (returns main content HTML)
+│   ├── chunker.py          # splits by heading structure
+│   └── tracker.py          # tracks ingested URLs to avoid re-indexing
 ├── retrieval/
-│   ├── embedder.py         # nomic-embed-text via Ollama REST
-│   └── vector_store.py     # ChromaDB indexing and retrieval
+│   ├── embedder.py         # batched embeddings via Ollama /api/embed
+│   └── vector_store.py     # ChromaDB wrapper
 ├── agent/
 │   ├── language_detector.py
 │   ├── translator.py
-│   ├── relevance_checker.py
+│   ├── relevance_checker.py   # cosine similarity scoring (no LLM call)
 │   ├── query_reformulator.py
-│   └── rag_agent.py        # full pipeline with retry loop
+│   └── rag_agent.py
 ├── evaluation/
-│   ├── test_set.json        # 26 Q&A pairs in Swedish and English
-│   ├── evaluator.py         # retrieval accuracy, faithfulness, translation quality
-│   └── metrics_logger.py    # evaluation results → SQLite
+│   ├── test_set_personal.json   # 16 questions for the researcher use case
+│   ├── test_set.json
+│   ├── evaluator.py
+│   └── metrics_logger.py
 ├── observability/
-│   └── logger.py            # query interaction logging → SQLite
+│   └── logger.py
 ├── ui/
-│   └── app.py               # Streamlit chat + metrics dashboard
-├── config.py                # all parameters centralised here
-requirements.txt
-README.md
+│   └── app.py
+└── config.py
+ingest_personal.py            # main ingestion script
+ingest.py                     # generic ingestion (no topic filtering)
+run_tests.py                  # test runner
+assess_extent_of_website.py   # sitemap analysis
 ```

@@ -1,1 +1,13 @@
 /migrag
+.DS_Store
+migrationsverket_bot/data/
+migrationsverket_bot/data/chroma
+migrationsverket_bot/migrationsverket_rag.sqlite
+*.sqlite
+*.db
+*.log
+*.csv
+*.json
+*.env
+__pycache__/
+*.sqlite3

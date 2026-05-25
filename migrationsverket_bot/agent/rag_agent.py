@@ -34,7 +34,7 @@ def _generate_answer(query: str, chunks: list[dict]) -> str:
     """Generate a grounded Swedish answer from retrieved chunks."""
     context_parts = []
     for c in chunks:
-        meta = c.get("metadata", {})
+        meta = c.get("metadata") or {}
         url = meta.get("url", "okänd källa")
         section = meta.get("heading", "")
         text = c.get("document", "")
@@ -42,12 +42,16 @@ def _generate_answer(query: str, chunks: list[dict]) -> str:
     context = "\n\n".join(context_parts)
 
     prompt = (
-        "Du är en hjälpsam assistent som svarar på frågor om svensk immigration "
-        "enbart baserat på den angivna kontexten. Svara på svenska. "
-        "Om kontexten inte räcker för att svara, säg det tydligt utan att gissa.\n\n"
-        f"Kontext:\n{context}\n\n"
-        f"Fråga: {query}\n\n"
-        "Svar (strikt baserat på kontexten ovan):"
+        "You are a helpful assistant answering questions about Swedish immigration "
+        "based strictly on the provided context below. "
+        "Answer in the same language as the question. "
+        "Be specific and practical — list steps, documents, and requirements where relevant. "
+        "IMPORTANT: never state that something is NOT required or NOT necessary unless "
+        "the context explicitly says so. If you are unsure, omit the statement entirely. "
+        "Only say you don't know if the context genuinely contains no relevant information.\n\n"
+        f"Context:\n{context}\n\n"
+        f"Question: {query}\n\n"
+        "Answer:"
     )
 
     response = requests.post(
@@ -79,16 +83,17 @@ class RAGAgent:
         detected_language = detect_language(query)
         target_language = explicit_language or detected_language
 
-        swedish_query, query_translated = translate_query(query, detected_language)
+        _, query_translated = translate_query(query, detected_language)
 
-        current_query = swedish_query
+        current_query = query
         reformulated_query: str | None = None
         chunks: list[dict] = []
         relevance_score = 0.0
 
         for attempt in range(RETRY_LIMIT + 1):
             embedding = self.embedder.embed_query(current_query)
-            chunks = self.vector_store.query(embedding)
+            raw_chunks = self.vector_store.query(embedding)
+            chunks = [c for c in raw_chunks if len(c.get("document") or "") > 100]
             relevance_score = assess_relevance(current_query, chunks)
 
             if relevance_score >= CONFIDENCE_THRESHOLD:
@@ -107,8 +112,8 @@ class RAGAgent:
             answer, answer_translated = translate_response(answer_sv, target_language)
             sources = [
                 {
-                    "url": c.get("metadata", {}).get("url", ""),
-                    "section": c.get("metadata", {}).get("heading", ""),
+                    "url": (c.get("metadata") or {}).get("url", ""),
+                    "section": (c.get("metadata") or {}).get("heading", ""),
                 }
                 for c in chunks
             ]
