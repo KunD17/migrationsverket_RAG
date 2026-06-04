@@ -1,4 +1,5 @@
 /migrag
+/benchmarks/
 .DS_Store
 migrationsverket_bot/data/
 migrationsverket_bot/data/chroma

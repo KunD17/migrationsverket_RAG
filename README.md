@@ -67,6 +67,29 @@ python run_tests.py
 
 Runs 16 questions covering the main use cases and checks answers against expected keywords.
 
+## Baseline Performance
+
+Measured 2026-06-04 · commit `663ae52` · branch `improving-truthfulness` · 16 questions
+
+| Metric | Value |
+|---|---|
+| Pass rate | 31% (5/16) |
+| Fallback rate | 0% |
+| Avg confidence | 90% |
+| Avg latency | 24.6s |
+
+**By category:**
+
+| Category | Pass rate |
+|---|---|
+| visiting | 40% (2/5) |
+| work_permit | 25% (1/4) |
+| permanent_residency | 50% (1/2) |
+| citizenship | 50% (1/2) |
+| researcher | 0% (0/1) |
+| eu_blue_card | 0% (0/1) |
+| family_reunification | 0% (0/1) |
+
 ## Tuning
 
 Everything is in [config.py](migrationsverket_bot/config.py):
