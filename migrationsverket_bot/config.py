@@ -10,6 +10,7 @@ DB_PATH = ROOT_DIR / "migrationsverket_rag.sqlite"
 OLLAMA_BASE_URL = "http://localhost:11434"
 OLLAMA_MODEL = "llama3.1"
 EMBEDDING_MODEL = "nomic-embed-text"
+OLLAMA_TEMPERATURE = 0.1  # low temperature favors verbatim facts over paraphrasing
 
 # Retrieval settings
 TOP_K = 5

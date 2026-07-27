@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import time
 from typing import Any, Callable
 
@@ -15,8 +16,31 @@ from migrationsverket_bot.config import (
     CONFIDENCE_THRESHOLD,
     OLLAMA_BASE_URL,
     OLLAMA_MODEL,
+    OLLAMA_TEMPERATURE,
     RETRY_LIMIT,
 )
+
+_NUMERIC_FACT_PATTERN = re.compile(r"\b\d[\d.,]*%?\b")
+
+
+def _numeric_facts(text: str) -> set[str]:
+    """Pull out numbers, percentages, and form-like codes for verbatim grounding checks."""
+    return set(_NUMERIC_FACT_PATTERN.findall(text))
+
+
+def _call_ollama(prompt: str) -> str:
+    response = requests.post(
+        f"{OLLAMA_BASE_URL}/api/generate",
+        json={
+            "model": OLLAMA_MODEL,
+            "prompt": prompt,
+            "stream": False,
+            "options": {"temperature": OLLAMA_TEMPERATURE},
+        },
+        timeout=120,
+    )
+    response.raise_for_status()
+    return response.json()["response"].strip()
 
 _FALLBACK = {
     "sv": (
@@ -46,6 +70,9 @@ def _generate_answer(query: str, chunks: list[dict]) -> str:
         "based strictly on the provided context below. "
         "Answer in the same language as the question. "
         "Be specific and practical — list steps, documents, and requirements where relevant. "
+        "First identify every specific number, date, percentage, deadline, and form/document "
+        "name in the context that is relevant to the question, then include all of them "
+        "verbatim in your answer — do not paraphrase, round, or omit them. "
         "IMPORTANT: never state that something is NOT required or NOT necessary unless "
         "the context explicitly says so. If you are unsure, omit the statement entirely. "
         "Only say you don't know if the context genuinely contains no relevant information.\n\n"
@@ -54,13 +81,21 @@ def _generate_answer(query: str, chunks: list[dict]) -> str:
         "Answer:"
     )
 
-    response = requests.post(
-        f"{OLLAMA_BASE_URL}/api/generate",
-        json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False},
-        timeout=120,
-    )
-    response.raise_for_status()
-    return response.json()["response"].strip()
+    answer = _call_ollama(prompt)
+
+    missing_facts = _numeric_facts(context) - _numeric_facts(answer)
+    if missing_facts:
+        correction_prompt = (
+            f"{prompt}{answer}\n\n"
+            "The context contains these specific values that your answer above did not "
+            f"mention: {', '.join(sorted(missing_facts))}. If any of them are relevant to "
+            "the question, revise your answer to include them verbatim. Otherwise repeat "
+            "your answer unchanged.\n\n"
+            "Revised answer:"
+        )
+        answer = _call_ollama(correction_prompt)
+
+    return answer
 
 
 class RAGAgent:

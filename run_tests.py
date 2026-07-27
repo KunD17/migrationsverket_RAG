@@ -1,14 +1,25 @@
-"""Run the personal test set against the RAG agent and report results."""
+"""Run the personal test set against the RAG agent and report results.
+
+Usage:
+  python run_tests.py                        # run all categories
+  python run_tests.py work_permit researcher  # narrow to specific categories
+"""
 
 import json
+import sys
 from migrationsverket_bot.agent.rag_agent import RAGAgent
 from migrationsverket_bot.retrieval.embedder import Embedder
 from migrationsverket_bot.retrieval.vector_store import VectorStore
 
 TEST_SET_PATH = "migrationsverket_bot/evaluation/test_set_personal.json"
 
+category_filter = set(sys.argv[1:]) or None
+
 with open(TEST_SET_PATH) as f:
     tests = json.load(f)
+
+if category_filter:
+    tests = [t for t in tests if t.get("category") in category_filter]
 
 agent = RAGAgent(vector_store=VectorStore(), embedder=Embedder())
 
