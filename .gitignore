@@ -12,3 +12,6 @@ migrationsverket_bot/migrationsverket_rag.sqlite
 *.env
 __pycache__/
 *.sqlite3
+
+# Claude Code — local machine settings only; commands/ and CLAUDE.md are tracked
+.claude/settings.local.json
